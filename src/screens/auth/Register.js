@@ -5,17 +5,21 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../components/backButton";
 import CustomInput from "../../components/textInput";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import {auth} from "../../config/firebase"
 
 export default function Register() {
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   return (
     <ScrollView>
