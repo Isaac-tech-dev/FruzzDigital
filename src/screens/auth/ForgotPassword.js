@@ -1,17 +1,49 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../components/backButton";
 import CustomInput from "../../components/textInput";
 import { useNavigation } from "@react-navigation/native";
+import { auth } from "../../config/firebase";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 
   const navigation = useNavigation();
-  const Otp = () => {
-    navigation.navigate("otp"); // Navigate to the next screen
+  const Otp = async () => {
+    if (email) {
+      try {
+        await auth().sendPasswordResetEmail(email);
+        Alert.alert(
+          "Password Reset Email Sent",
+          "Check your email for a password reset link."
+        );
+        navigation.navigate("otp"); // Navigate to the next screen
+      } catch (error) {
+        console.error("Error sending password reset email:", error);
+        Alert.alert(
+          "Error",
+          "An error occurred while sending the password reset email."
+        );
+      }
+    } else {
+      Alert.alert(
+        "Error",
+        "An error occurred while sending the password reset email."
+      );
+    }
   };
+
+  //CHNAGE PASSWORD
+  // const Reset = async () => {
+  //   try {
+  //     await auth().sendPasswordResetEmail(email);
+  //     Alert.alert('Password Reset Email Sent', 'Check your email for a password reset link.');
+  //   } catch (error) {
+  //     console.error('Error sending password reset email:', error);
+  //     Alert.alert('Error', 'An error occurred while sending the password reset email.');
+  //   }
+  // };
 
   return (
     <SafeAreaView style={{ paddingHorizontal: 20 }}>
@@ -45,7 +77,7 @@ export default function ForgotPassword() {
         <CustomInput
           placeholder="Enter your Email"
           value={email}
-          onChangeText={(text) => setEmail(text)}
+          onChangeText={(value) => setEmail(value)}
         />
       </View>
 

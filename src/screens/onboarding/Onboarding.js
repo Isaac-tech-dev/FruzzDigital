@@ -14,7 +14,7 @@ export default function Onboarding() {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../../../assets/images/background.png")} />
+      <Image style={{width: '100%', height: '100%'}} source={require("../../../assets/images/background.png")}/>
       <View style={styles.logo}>
         <Image source={require("../../../assets/icons/logo.png")} />
         <Image source={require("../../../assets/icons/Text.png")} />

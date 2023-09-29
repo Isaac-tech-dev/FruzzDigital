@@ -1,15 +1,43 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../components/backButton";
 import CustomInput from "../../components/textInput";
 import { useNavigation } from "@react-navigation/native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
+  const Login = async () => {
+    setLoading(true);
+    if (email && password) {
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        navigation.navigate("home");
+      } catch (err) {
+        console.log("Error:", err.message);
+      }
+      //Goodd to Go
+      //navigation.goBack()
+      //navigation.navigate("Home");
+    } else {
+      //show error
+       setLoading(false);
+      Alert.alert("Fill all inputs");
+    }
+    setTimeout(() => {
+      // After the operation is complete, hide the ActivityIndicator
+      setLoading(false);
+
+      // You can also navigate to another screen or perform any other action here.
+    }, 2000);
+  };
+
   const ForgotPassword = () => {
     navigation.navigate("forgotpassword"); // Navigate to the next screen
   };
@@ -51,35 +79,42 @@ export default function Login() {
         </TouchableOpacity>
       </View>
 
-      <View
-        style={{
-          marginTop: 20,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <TouchableOpacity
-          style={{
-            marginTop: 8,
-            paddingHorizontal: 10,
-            paddingVertical: 15,
-            backgroundColor: "#2a2a2a",
-            width: "80%",
-            borderRadius: 8,
-          }}
-        >
-          <Text
+      <View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#2a2a2a" />
+        ) : (
+          <View
             style={{
-              color: "#fff",
-              textAlign: "center",
-              fontSize: 18,
-              fontWeight: 500,
+              marginTop: 20,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            Login
-          </Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                marginTop: 8,
+                paddingHorizontal: 10,
+                paddingVertical: 15,
+                backgroundColor: "#2a2a2a",
+                width: "80%",
+                borderRadius: 8,
+              }}
+              onPress={Login}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontSize: 18,
+                  fontWeight: "500", // Changed from 500 to "500"
+                }}
+              >
+                Login
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <View
@@ -140,9 +175,18 @@ export default function Login() {
         </View>
       </View>
 
-      <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 20,}}>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: 20,
+        }}
+      >
         <Text>
-          Don’t have an account? <Text style={{color: '#35C2C1', fontWeight: "bold"}}>Register Now</Text>
+          Don’t have an account?{" "}
+          <Text style={{ color: "#35C2C1", fontWeight: "bold" }}>
+            Register Now
+          </Text>
         </Text>
       </View>
     </SafeAreaView>

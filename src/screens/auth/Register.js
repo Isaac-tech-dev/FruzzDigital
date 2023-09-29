@@ -6,13 +6,15 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../components/backButton";
 import CustomInput from "../../components/textInput";
+import { useNavigation } from "@react-navigation/core";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import {auth} from "../../config/firebase"
+import { auth } from "../../config/firebase";
 
 export default function Register() {
   const [username, setUserName] = useState("");
@@ -20,6 +22,30 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation();
+
+  const Register = async () => {
+    if (email && password) {
+      try {
+        setLoading(true);
+        await createUserWithEmailAndPassword(auth, email, password);
+        navigation.navigate("login");
+      } catch (err) {
+        console.log("Error:", err.message);
+      }
+    } else {
+      //show error
+      setLoading(false);
+      Alert.alert("Fill all inputs");
+    }
+    setTimeout(() => {
+      // After the operation is complete, hide the ActivityIndicator
+      setLoading(false);
+
+      // You can also navigate to another screen or perform any other action here.
+    }, 2000);
+  };
 
   return (
     <ScrollView>
@@ -33,7 +59,7 @@ export default function Register() {
             fontWeight: "bold",
             width: "80%",
             lineHeight: 40,
-            marginTop: 70,
+            marginTop: 20,
           }}
         >
           Hello! Register to get started
@@ -43,58 +69,65 @@ export default function Register() {
           <CustomInput
             placeholder="Enter Username"
             value={username}
-            onChangeText={(text) => setUserName(text)}
+            onChangeText={(value) => setUserName(value)}
           />
           <CustomInput
             placeholder="Enter your Email"
             value={email}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={(value) => setEmail(value)}
           />
           <CustomInput
             placeholder="Enter your Password"
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={(value) => setPassword(value)}
             secureTextEntry={true}
             showEyeToggle={true}
           />
           <CustomInput
             placeholder="Confirm Password"
             value={confirmpassword}
-            onChangeText={(text) => setConfirmPassword(text)}
+            onChangeText={(value) => setConfirmPassword(value)}
             secureTextEntry={true}
             showEyeToggle={true}
           />
         </View>
 
-        <View
-          style={{
-            marginTop: 20,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              marginTop: 8,
-              paddingHorizontal: 10,
-              paddingVertical: 15,
-              backgroundColor: "#2a2a2a",
-              width: "80%",
-              borderRadius: 8,
-            }}
-          >
-            <Text
+        <View>
+          {loading ? (
+            <ActivityIndicator size="large" color="#2a2a2a" />
+          ) : (
+            <View
               style={{
-                color: "#fff",
-                textAlign: "center",
-                fontSize: 18,
-                fontWeight: 500,
+                marginTop: 20,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              Register
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  marginTop: 8,
+                  paddingHorizontal: 10,
+                  paddingVertical: 15,
+                  backgroundColor: "#2a2a2a",
+                  width: "80%",
+                  borderRadius: 8,
+                }}
+                onPress={Register}
+              >
+                <Text
+                  style={{
+                    color: "#fff",
+                    textAlign: "center",
+                    fontSize: 18,
+                    fontWeight: "500", // Changed from 500 to "500"
+                  }}
+                >
+                  Register
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         <View
